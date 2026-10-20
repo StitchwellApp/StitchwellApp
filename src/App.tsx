@@ -45,16 +45,24 @@ const dateShift = (offset: number) => {
 };
 const release = (sal: Sal, section: number) =>
   Date.parse(`${sal.start}T00:00:00Z`) + section * sal.cadence * day;
-const status = (sal: Sal): Status =>
-  Date.now() < release(sal, 0)
+const status = (sal: Sal, at: number): Status =>
+  at < release(sal, 0)
     ? "Upcoming"
-    : Date.now() >= release(sal, sal.sections - 1)
+    : at >= release(sal, sal.sections - 1)
       ? "Library"
       : "Live";
-const unlocked = (sal: Sal) =>
+const unlocked = (sal: Sal, at: number) =>
   Array.from({ length: sal.sections }, (_, i) => release(sal, i)).filter(
-    (value) => value <= Date.now(),
+    (value) => value <= at,
   ).length;
+function useClock() {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+  return now;
+}
 const localTime = (value: number) =>
   new Intl.DateTimeFormat(undefined, {
     dateStyle: "medium",
@@ -210,11 +218,12 @@ function Card({
   open: () => void;
   progress?: boolean;
 }) {
+  const now = useClock();
   return (
     <button className="sal-card" onClick={open}>
       <Art kind={sal.art} />
       <div className="sal-card-body">
-        <Badge value={status(sal)} />
+        <Badge value={status(sal, now)} />
         <h3>{sal.title}</h3>
         <p>by {sal.designer}</p>
         <div className="meta">
@@ -227,7 +236,7 @@ function Card({
         </div>
         {progress && (
           <small className="progress-label">
-            {unlocked(sal)} of {sal.sections} sections released
+            {unlocked(sal, now)} of {sal.sections} sections released
           </small>
         )}
       </div>
@@ -249,6 +258,7 @@ function Detail({
   byDesigner: () => void;
 }) {
   const [tab, setTab] = useState<"sections" | "about">("sections");
+  const now = useClock();
   return (
     <>
       <button className="back" onClick={back}>
@@ -259,7 +269,7 @@ function Detail({
           <Art kind={sal.art} />
         </div>
         <div className="detail-copy">
-          <Badge value={status(sal)} />
+          <Badge value={status(sal, now)} />
           <h1>{sal.title}</h1>
           <button className="designer-link" onClick={byDesigner}>
             by {sal.designer} <ChevronRight size={14} />
@@ -314,16 +324,18 @@ function Detail({
           <>
             <div className="release-summary">
               <strong>
-                {unlocked(sal)} of {sal.sections} released
+                {unlocked(sal, now)} of {sal.sections} released
               </strong>
               <div className="track">
                 <span
-                  style={{ width: `${(unlocked(sal) / sal.sections) * 100}%` }}
+                  style={{
+                    width: `${(unlocked(sal, now) / sal.sections) * 100}%`,
+                  }}
                 />
               </div>
             </div>
             {Array.from({ length: sal.sections }, (_, i) => {
-              const available = release(sal, i) <= Date.now();
+              const available = release(sal, i) <= now;
               return (
                 <div className="section-line" key={i}>
                   <span className={available && isJoined ? "open" : ""}>
@@ -367,7 +379,7 @@ function Detail({
 }
 function Calendar({ sals, open }: { sals: Sal[]; open: (id: string) => void }) {
   const [offset, setOffset] = useState(0);
-  const now = new Date();
+  const now = new Date(useClock());
   const month = new Date(now.getFullYear(), now.getMonth() + offset, 1);
   const events = sals
     .flatMap((sal) =>
@@ -476,6 +488,7 @@ function Designer({
   created: Sal[];
   add: (sal: Sal) => void;
 }) {
+  const now = useClock();
   const [page, setPage] = useState<"overview" | "create">("overview");
   const [title, setTitle] = useState(""),
     [description, setDescription] = useState(""),
@@ -575,13 +588,13 @@ function Designer({
               <div>
                 <span>Currently live</span>
                 <strong>
-                  {created.filter((s) => status(s) === "Live").length}
+                  {created.filter((s) => status(s, now) === "Live").length}
                 </strong>
               </div>
               <div>
                 <span>Coming soon</span>
                 <strong>
-                  {created.filter((s) => status(s) === "Upcoming").length}
+                  {created.filter((s) => status(s, now) === "Upcoming").length}
                 </strong>
               </div>
             </div>
@@ -602,7 +615,7 @@ function Designer({
                         {s.sections} sections · every {s.cadence} days
                       </small>
                     </span>
-                    <Badge value={status(s)} />
+                    <Badge value={status(s, now)} />
                   </div>
                 ))}
               </div>
@@ -806,6 +819,7 @@ function Designer({
   );
 }
 function App() {
+  const now = useClock();
   const [designer, setDesigner] = useState(
     location.pathname.startsWith("/designer"),
   );
@@ -852,7 +866,7 @@ function App() {
   };
   const matches = sals.filter(
     (s) =>
-      (filter === "All" || status(s) === filter) &&
+      (filter === "All" || status(s, now) === filter) &&
       `${s.title} ${s.designer} ${s.description} ${s.tags.join(" ")}`
         .toLowerCase()
         .includes(query.toLowerCase()),
@@ -1108,7 +1122,8 @@ function App() {
                   <div className="cards">
                     {sals
                       .filter(
-                        (s) => joined.includes(s.id) && status(s) !== "Library",
+                        (s) =>
+                          joined.includes(s.id) && status(s, now) !== "Library",
                       )
                       .map((s) => (
                         <Card
@@ -1125,7 +1140,8 @@ function App() {
                   <div className="cards">
                     {sals
                       .filter(
-                        (s) => joined.includes(s.id) && status(s) === "Library",
+                        (s) =>
+                          joined.includes(s.id) && status(s, now) === "Library",
                       )
                       .map((s) => (
                         <Card
