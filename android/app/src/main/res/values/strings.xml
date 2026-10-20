@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Stitchwell</string>
+    <string name="title_activity_main">Stitchwell</string>
+    <string name="package_name">com.stitchwell.app</string>
+    <string name="custom_url_scheme">com.stitchwell.app</string>
+</resources>
