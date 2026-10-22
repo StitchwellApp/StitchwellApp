@@ -4,7 +4,9 @@ Local implementation started from the executed Stitchwell Software Development A
 
 ## Current state
 
-This repository contains a responsive Stitchwell preview, an Android Capacitor project, and an initial Supabase migration. The preview has sample stitch-alongs and saves demo joins, profile text, and designer SAL metadata in this browser's local storage. **It is not connected to Supabase.** Pattern files selected in the designer form are validated locally and discarded when the form is saved. Do not use the preview for real user or pattern data.
+This repository contains the responsive Stitchwell app, an Android Capacitor project, and a connected Supabase backend. The schema and storage policies are deployed to the Stitchwell project. With `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` configured, the app supports email/password authentication, account profile data, public SAL discovery, SAL publishing, enrollments, signed access to released pattern files, and account deletion with stored-file cleanup. Without those values, it falls back to sample data and browser-local preview behavior.
+
+Google sign-in still requires OAuth credentials and redirect configuration in the Client's Google and Supabase accounts. Production email delivery and final redirect URLs need the agreed site domain and email service configuration. Never put a Supabase secret/service-role key in the frontend.
 
 See [docs/implementation-status.md](docs/implementation-status.md) for delivered work, remaining work, and client dependencies.
 
@@ -18,6 +20,8 @@ npm run dev
 ```
 
 Open `http://localhost:5173/` for the stitcher preview and `http://localhost:5173/designer` for the designer studio.
+
+To use the live backend, copy `.env.example` to `.env.local` and set the project URL and publishable key. Without those values, the app remains in local preview mode.
 
 ```sh
 npm run build
@@ -37,12 +41,12 @@ cd android
 
 The installable debug APK is `android/app/build/outputs/apk/debug/app-debug.apk`. It is a preview build, not a Play Store release. The current Android application ID `com.stitchwell.app` is provisional until the Client confirms the Play Console listing and final package name.
 
-## Supabase setup when the Client-owned project is available
+## Supabase configuration
 
-1. Review and apply `supabase/migrations/20261020_initial.sql` to the Client-owned Supabase project. The migration has not yet been executed against a project.
-2. Add the project URL and publishable key to `.env.local` using `.env.example` as a template. Never put a service-role key in the frontend.
-3. Configure email and Google auth, redirect URLs, storage, and account deletion in the Client-owned project.
-4. Replace the local preview data layer with authenticated Supabase queries and upload flows; verify the access policies with real test accounts before release.
+1. The project is linked in the local Supabase CLI configuration. Migrations `20261020_initial.sql`, `202610220001_profile_avatars.sql`, and `202610220002_public_discovery.sql` are applied. The `delete-account` Edge Function is deployed.
+2. `.env.local` contains the project URL and publishable key and is ignored by Git. Copy the values from `.env.example` into deployment environments. Never use a secret/service-role key in the frontend.
+3. Configure Google OAuth credentials, the production site and redirect URLs, and production email delivery in the Client-owned accounts.
+4. Verify the live flows and access policies with Client-provided test accounts before release.
 
 The schema reserves an `access_model` and price fields for a later paid SAL phase, while the MVP write policies permit only free SALs. Pattern storage is private. Section access is calculated from the SAL's UTC start date and cadence, and requires enrollment; a stitcher joining a fully released SAL can access all already released sections.
 

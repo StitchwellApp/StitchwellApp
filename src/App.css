@@ -54,6 +54,32 @@
   font-size: 13px;
   font-weight: 700;
 }
+.account-button {
+  min-height: 38px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #dce6dc;
+  border-radius: 8px;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 700;
+}
+.account-button:hover {
+  background: #f4f8f2;
+}
+.service-message {
+  position: relative;
+  z-index: 19;
+  margin: 0;
+  padding: 9px 18px;
+  color: #4b705d;
+  background: #edf5ec;
+  text-align: center;
+  font-size: 12px;
+}
 .layout,
 .designer-layout {
   display: grid;
@@ -258,6 +284,15 @@
   position: relative;
   overflow: hidden;
   background: #d9e6db;
+}
+.photo-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-art:after {
+  content: none;
 }
 .art:after {
   content: "";
@@ -646,6 +681,113 @@
   font-size: 11px;
   margin-top: 3px;
 }
+.file-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 7px 8px 0 0;
+  padding: 7px 9px;
+  border: 1px solid #d9e5d8;
+  border-radius: 7px;
+  color: var(--green);
+  font-size: 11px;
+}
+.file-download:hover {
+  background: #f2f7f1;
+}
+.auth-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: #192a24a6;
+}
+.auth-dialog {
+  position: relative;
+  width: min(100%, 430px);
+  max-height: min(90vh, 720px);
+  overflow: auto;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 25px 80px #15251e40;
+}
+.auth-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #829087;
+}
+.auth-dialog h2 {
+  margin: 12px 0 8px;
+  color: var(--dark);
+  font:
+    500 28px Fraunces,
+    Georgia,
+    serif;
+}
+.auth-dialog > p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.auth-dialog form {
+  display: grid;
+  gap: 15px;
+  margin-top: 20px;
+}
+.auth-dialog label {
+  display: grid;
+  gap: 7px;
+  color: var(--dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+.auth-dialog input {
+  width: 100%;
+  min-height: 45px;
+  padding: 10px 12px;
+  border: 1px solid #dfe5dd;
+  border-radius: 8px;
+  outline-color: #8fb09a;
+  color: var(--dark);
+}
+.auth-dialog .primary {
+  width: 100%;
+  min-height: 45px;
+  justify-content: center;
+}
+.auth-dialog .error {
+  margin: 0;
+}
+.auth-message {
+  margin: 0;
+  padding: 10px;
+  border-radius: 8px;
+  background: #eff6ed;
+  color: #496e57;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.auth-links {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 16px;
+}
+.auth-links button {
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 700;
+}
 .about {
   padding: 23px 0;
   color: #778b7b;
@@ -681,6 +823,12 @@
   color: #aa7766;
   display: grid;
   place-items: center;
+  overflow: hidden;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .profile h2 {
   font:
@@ -697,6 +845,18 @@
 .profile .outline {
   display: block;
   margin-top: 13px;
+}
+.delete-account {
+  display: block;
+  margin: 15px 0 0 auto;
+  padding: 9px 12px;
+  border: 1px solid #ead1ce;
+  border-radius: 8px;
+  color: #a04e49;
+  font-size: 12px;
+}
+.delete-account:hover {
+  background: #fbf0ef;
 }
 .outline {
   border: 1px solid #d4e0d4;
@@ -971,17 +1131,49 @@
 .fields textarea {
   resize: vertical;
 }
-.cover-placeholder {
+.cover-picker {
+  position: relative;
   border: 1px dashed #d5dfd4;
   border-radius: 9px;
-  padding: 17px;
+  min-height: 90px;
+  padding: 13px 15px;
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #9aa69c;
+  color: #789083;
   font-size: 11px;
   font-weight: 400;
   background: #fafcf9;
+  cursor: pointer;
+}
+.cover-picker:hover {
+  border-color: #9eb8a4;
+  background: #f5f9f4;
+}
+.cover-picker > img {
+  width: 72px;
+  height: 62px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.cover-picker > span {
+  display: grid;
+  gap: 5px;
+}
+.cover-picker strong {
+  color: var(--green);
+  font-size: 12px;
+}
+.cover-picker small {
+  font-size: 11px;
+}
+.cover-picker input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
 }
 .upload {
   border: 1px dashed #c9dacb;
@@ -997,19 +1189,58 @@
 .upload input {
   display: none;
 }
-.file {
+.file-assignment {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 12px;
   color: var(--green);
-  padding: 9px;
+  padding: 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
+  background: #fff;
 }
-.file span {
+.file-name {
   flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+.file-name strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--dark);
+}
+.file-name small {
+  color: #87948a;
+}
+.file-assignment select {
+  width: min(230px, 42%);
+  min-height: 40px;
+  border: 1px solid #dce4da;
+  border-radius: 7px;
+  padding: 7px 9px;
+  color: var(--dark);
+  background: #fff;
+  font-size: 12px;
+}
+.file-assignment button {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+}
+.file-assignment button:hover {
+  background: #f8eeee;
+  color: #ae4646;
+}
+.error-inline {
+  display: block;
+  color: #ae4646 !important;
+  margin-top: 5px;
 }
 .cadence {
   display: flex;
@@ -1062,8 +1293,8 @@
 }
 @media (max-width: 700px) {
   .topbar {
-    height: 62px;
-    padding: 0 17px;
+    height: calc(62px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 17px 0;
   }
   .brand {
     font-size: 21px;
@@ -1084,7 +1315,7 @@
   }
   .main,
   .designer-main {
-    padding: 27px 18px 94px;
+    padding: 27px 18px calc(94px + env(safe-area-inset-bottom));
   }
   .page-title h1,
   .studio-hero h1 {
@@ -1148,7 +1379,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 69px;
+    height: calc(69px + env(safe-area-inset-bottom));
     background: #fff;
     border-top: 1px solid var(--line);
     display: grid;
@@ -1192,6 +1423,14 @@
   }
   .profile {
     padding: 17px;
+  }
+  .file-assignment {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) 38px;
+  }
+  .file-assignment select {
+    grid-column: 2 / 4;
+    width: 100%;
   }
   .avatar {
     width: 53px;
